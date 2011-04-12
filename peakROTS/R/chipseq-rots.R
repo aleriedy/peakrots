@@ -101,9 +101,6 @@ rots.create.jobs <- function(file, do.bootstrap) {
 				job.name = paste("findpeaks_b", s, b, sep=""), 
 				script.name = script.name,
 				unique.id = unique.id, 
-				## THE OLD DEPENDENCIES
-				#dependencies = ifelse(do.bootstrap, list(b, unique.id.findpeaks.original), list(unique.id.findpeaks.original)),
-				## THE NEW DEPENDENCIES
 				dependencies = new.dependencies,
 				args = args
 			)
@@ -134,9 +131,6 @@ rots.create.jobs <- function(file, do.bootstrap) {
 				job.name = paste("findpeaks_r", s, b, sep=""), 
 				script.name = script.name,
 				unique.id = unique.id,
-				## THE OLD DEPENDENCIES				
-				#dependencies = ifelse(do.bootstrap, list(b, unique.id.findpeaks.original), list(unique.id.findpeaks.original)),
-				## THE NEW DEPENDENCIES
 				dependencies = new.dependencies,
 				args = args
 			)

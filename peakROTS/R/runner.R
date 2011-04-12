@@ -1,4 +1,3 @@
-
 run <- function(
 	path.work = "work", 
 	do.run = do.run.local.silent, 
@@ -81,7 +80,7 @@ run <- function(
 				new.job <- transition(file.from = bookkeeping.pending, file.to = bookkeeping.running, runnable.job.id)
 
 				# start the job
-				job.command <- paste("echo \"library(peakROTS); dispatch();\" | ", r.command, " --vanilla --args", path.work, new.job["id"], new.job["function"], paste(new.job["args"][[1]], collapse=" "), sep=" ")
+				job.command = paste("echo \' .libPaths(\\\"$USERAPPL\\\"); .libPaths(); library(peakROTS); dispatch(); \' | ", r.command, " --vanilla --args", path.work, new.job["id"], new.job["function"], paste(new.job["args"][[1]], collapse=" "), sep=" ")
 				log.file <- file.path(path.log, paste(new.job["id"], ".log", sep=""))
 				do.run(job.command, new.job["name"], log.file)
 				
@@ -217,11 +216,11 @@ do.run.local <- function(job.command, job.name, log.file) {
 }
 
 do.run.lsf <- function(job.command, job.name, log.file, max.run.time = "24:00") {
-	system(paste("bsub -W ", max.run.time, " -J ", job.name, " -u '' -o ", log.file, " -e ", log.file, " '", job.command, "' >> /dev/null", sep=""), wait=FALSE)	
+	system(paste("bsub -M 4194304 -W ", max.run.time, " -J ", job.name, " -u \"\" -o ", log.file, " -e ", log.file, " \"", job.command, "\" >> /dev/null", sep=""), wait=FALSE)	
 }
 
 do.run.lsf.verbose <- function(job.command, job.name, log.file, max.run.time = "24:00") {
-	system(paste("bsub -W ", max.run.time, " -J ", job.name, " -o ", log.file, " -e ", log.file, " '", job.command, "'", sep=""), wait=FALSE)	
+	system(paste("bsub -M 4194304 -W ", max.run.time, " -J ", job.name, " -o ", log.file, " -e ", log.file, " \"", job.command, "\"", sep=""), wait=FALSE)	
 }
 
 
