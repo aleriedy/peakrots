@@ -193,7 +193,7 @@ results.MACS <- function() {
 results.PeakSeq <- function() {
 	sets <- ceiling(c(1:bootstrap.count)/10)	
 
-	debug <- FALSE
+	debug <- TRUE
 
 	#--------------------------------------
 	# COLLECT THE REPRODUCIBILITY RESULTS
@@ -243,37 +243,65 @@ results.PeakSeq <- function() {
 					    # ADDING 39 NA-LINES THE BOTTOM OF REPRO-MATRICES TO GET FULL 75 ROWS 
 					    # FOR ALL COMBINATIONS OF PARAMETERS
 
-					    if(debug){print(paste("Reading repro: READLENGTH",READLENGTH[[READLENGTH.index]], "_MAXGAP",MAXGAP[[MAXGAP.index]],"REP",b,"rep",bb,sep=""))}
+					    file=paste(file.path(path.repro, paste(outputName,
+                                                "_READLENGTH",READLENGTH[[READLENGTH.index]],
+                                                "_MAXGAP",MAXGAP[[MAXGAP.index]],
+                                                "_WSIZE",WSIZE[[par.index]],
+                                                "_WPERC",WPERC[[par.index]],
+                                                "_REP",b,
+                                                "_rep",bb,
+                                                sep="")), "txt", sep=".")
+
+					    if(debug){print(paste("Reading repro:",file))}
 	        	                    ## Read the bootstrap reproducibility.
-        	        	            data<- read.table(paste(file.path(path.repro, paste(outputName, 
+        	        	            data<- try(read.table(paste(file.path(path.repro, paste(outputName, 
 						"_READLENGTH",READLENGTH[[READLENGTH.index]], 
 						"_MAXGAP",MAXGAP[[MAXGAP.index]], 
 						"_WSIZE",WSIZE[[par.index]], 
 						"_WPERC",WPERC[[par.index]],
 						"_REP",b,
                 		                "_rep",bb,
-                       		 	        sep="")), "txt", sep="."), sep="\t", header=TRUE)
-					    mat2 <- matrix(nrow=39,ncol=3)
-					    colnames(mat2)=c("TopK","p.rand.c500","e.p.rand.c500")
-				 	    mat2[,1] <- 1000000
-	                	            apu[[index]]<-rbind(data,mat2)
-					    #if(debug){print(apu[[b]])}
+                       		 	        sep="")), "txt", sep="."), sep="\t", header=TRUE), silent=TRUE)
+
+					    if(class(data)=="try-error"){
+						    # Could not read the reproducibility file for some reason
+						    mat=matrix(nrow=75, ncol=3)
+						    colnames(mat)=c("TopK","p.rand.c500","e.p.rand.c500")
+					            apu[[index]] = mat
+					    }else{
+	                                            mat2 <- matrix(nrow=39,ncol=3)
+        	                                    colnames(mat2)=c("TopK","p.rand.c500","e.p.rand.c500")
+                	                            mat2[,1] <- 1000000
+                        	                    apu[[index]]<-rbind(data,mat2)
+					    }
+
 
 					    if(debug){print(paste("Reading repro random: READLENGTH",READLENGTH[[READLENGTH.index]], "_MAXGAP",MAXGAP[[MAXGAP.index]],"REP",b,"rep",bb,sep=""))}
         		                    ## Read the corresponding random reproducibility.
-                		            data.random<- read.table(paste(file.path(path.repro, paste(outputName.random, 
+                		            data.random<- try(read.table(paste(file.path(path.repro, paste(outputName.random, 
 						"_READLENGTH",READLENGTH[[READLENGTH.index]], 
 						"_MAXGAP",MAXGAP[[MAXGAP.index]], 
 						"_WSIZE",WSIZE[[par.index]], 
 						"_WPERC",WPERC[[par.index]],
                    	    	 	        "_REP",b,
                 		                "_rep",bb,
-	               		                 sep="")), "txt", sep="."), sep="\t", header=TRUE)
+	               		                 sep="")), "txt", sep="."), sep="\t", header=TRUE),silent=TRUE)
 					    mat2 <- matrix(nrow=39, ncol=3)
 					    colnames(mat2)=c("TopK","p.rand.c500","e.p.rand.c500")
 					    mat2[,1] <- 1000000
         	       		            apu.random[[index]]<- rbind(data.random,mat2)
-					    #if(debug){print(apu.random[[b]])}
+
+                                            if(class(data.random)=="try-error"){
+                                                    # Could not read the reproducibility file for some reason
+                                                    mat=matrix(nrow=75, ncol=3)
+                                                    colnames(mat)=c("TopK","p.rand.c500","e.p.rand.c500")
+                                                    apu.random[[index]] = mat                                            
+                                            }else{
+	                                            mat2 <- matrix(nrow=39, ncol=3)
+        	                                    colnames(mat2)=c("TopK","p.rand.c500","e.p.rand.c500")
+                	                            mat2[,1] <- 1000000
+                        	                    apu.random[[index]]<- rbind(data.random,mat2)
+					    }
 
 					    index <- index + 1
 					}
@@ -382,10 +410,7 @@ results.PeakSeq <- function() {
 	## Number oftop peaks ( kk) considered on the basis of the peak list lengths. Here, require that the peak list with each parameter setting is at least kk. 
 	if(debug){print(paste("DZ length:",length(DZ)))}
 
-	# PROBLEMATIC FIELDS!
 	# Here length(DZ) is the amount of different combinations (36 for MACS)
-	# By chance (or?) the top list sizes TopK happen to also have 36 rows (MACS, produced by repro.R), but
-	# for PeakSeq the amount of different parameter combinations aren't 36 but instead 75.
 	n<- vector(length=length(DZ))
 	n_mean<- vector(length=length(DD))
 	for(i in 1:length(DZ)){
@@ -404,7 +429,7 @@ results.PeakSeq <- function() {
 		print(DZ[[1]][,"TopK"][n/length(DZ)==1])
 	}
 	
-	# PROBLEM; NONE WERE FOUND TO BE ==1?? PROBLEMS WITH RANDOM REPRODUCIBILITIES
+	# Term "n/length(DZ)==1" sometimes troublesome with random reproducibilities 
 	kk<- max(DZ[[1]][,"TopK"][n/length(DZ)==1])
 	kk_mean<- max(DD[[1]][,"TopK"][n_mean/length(DD)==1])
 	

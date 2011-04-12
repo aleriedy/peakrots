@@ -7,7 +7,7 @@ load.settings <- function(path.work) {
 
 # Initialise environment: save setting and create bookkeeping
 initialise <- function(
-	detector = "MACS",
+	detector="MACS",
 	data.path,
 	treatment.file, 
 	control.file, 
@@ -29,39 +29,44 @@ initialise <- function(
 	
 	## PeakSeq ROTS-parameters
 
-	# Parameters varied to find optimal ROTS
-
-	# Average read length
-	#READLENGTH = list(50, 100, 200, 300, 400), # default 200
-	# Windowing parameters per chromosome; default assumption that max chromosome size is 250M bp
-	#WSIZE = list(250000, 500000, 1000000, 2000000, 5000000), # default 1M
-	#WPERC = list(1000, 500, 250, 125, 50), # default 250
-	# Maximum gap between peaks
-	#MAXGAP = list(100, 200, 300),
-
-	## NEW MORE SOPHISTICATED RUN PARAMETERS TO BETTER OPTIMIZE ROTS
-	#READLENGTH = list(50, 100, 150, 200, 250, 300, 350, 400),
-	#WSIZE = list(909091,1000000,1111111, 2000000, 5000000),
-	#WPERC = list(275,250,225, 125, 50),
-	#MAXGAP = list(200),
-	
-	# Dropping unreliable parameters off
+	# Assuming default WSIZE & WPERC
 	READLENGTH = list(50, 100, 150, 200, 250, 300, 350, 400),
+	MAXGAP = list(100, 200, 300),	
 	WSIZE = list(1000000),
 	WPERC = list(250),
-	MAXGAP = list (100, 200, 300),	
 
 
 	# Parameters specific for the run
+	# User has to set these to suit the analysis to be run
 	
 	# Mappability file (different for e.g. human, mice, ...)
-	map.file = "/wrk/tlaajala/rots/PeakSeq/Mapability_HG.txt",
-	#
+	# For example:
+	# map.file = "/wrk/tlaajala/rots/PeakSeq/Mapability_HG.txt",
+	map.file,
+	
+	# Max Chromosome to be included in study
 	MAXCHR.defined = 23,
-	# Preprocess-address
-	preprocess.address = "/wrk/tlaajala/rots/run/PeakSeq/Preprocessing/Preprocess.so",
-	# PeakSeq-address
-	peakseq.address = "/wrk/tlaajala/rots/run/PeakSeq/PeakSeq_v1.01/PeakSeq_v1.01.so"
+	
+	# Chromosomes to go through in preprocessing: 
+	# for example C. Elegans coding is I, II, III, IV, V, X, M instead
+	# of the style chromosome 1,2,..., X, Y, M for human
+	preprocess.chr = as.character(c(1:22, "X", "Y", "M")),
+	# For example C. Elegans:
+	# preprocess.chr = as.character(c("I", "II", "III", "IV", "V", "X", "M"))
+	# or 
+	# preprocess.chr = as.character(c(1:5, "X", "M"))
+	# to match the columns with "chrIV.fa" or "chr4.fa" in the ELAND file.
+	
+
+	# Preprocess-address:
+	# The address to the shared library "Preprocess.so":
+	# e.g. preprocess.address = "/wrk/tlaajala/rots/run/PeakSeq/Preprocess/Preprocess.so"
+	preprocess.address,
+	
+	# PeakSeq-address:
+	# The address to the shared library "PeakSeq_v1.01.so":
+	# e.g. peakseq.address = "/wrk/tlaajala/rots/run/PeakSeq/PeakSeq_v1.01/PeakSeq_v1.01.so"
+	peakseq.address
 	
 	) {
 
@@ -110,11 +115,12 @@ initialise <- function(
 		nolambda,
 		mfold,
 		READLENGTH,
+		MAXGAP,
 		WSIZE,
 		WPERC,
-		MAXGAP,
 		map.file,
 		MAXCHR.defined,
+		preprocess.chr,
 		preprocess.address,
 		peakseq.address,
 		bookkeeping.pending,
