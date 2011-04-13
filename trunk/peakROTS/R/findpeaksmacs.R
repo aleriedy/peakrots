@@ -180,18 +180,49 @@ findpeaksmacs <- function(treatment.file, control.file, outputName, sample="", i
 ## function call.
 
 
+# For testing:
+#runMACS(treatment = "data/treatmentdata_example.dat", treatment = "data/controldata_example.dat", mfold=32, logFile="/dev/stdout")
+
 runMACS <- function(..., logFile="/dev/null") {
- 
+	
+	# Detect MACS version specific requirements
+	if (system("macs14", ignore.stdout = TRUE, ignore.stderr = TRUE) == 1) {
+		macs.command <- "macs14"
+		old.mfold <- FALSE
+		use.max.dup.tags <- FALSE
+	} else if (system("macs", ignore.stdout = TRUE, ignore.stderr = TRUE) == 1) {
+		macs.command <- "macs"
+		old.mfold <- TRUE		
+		if (length(grep("1.3.7", system("macs --version", intern = TRUE))) > 0) {
+			use.max.dup.tags <- FALSE
+		} else {
+			use.max.dup.tags <- TRUE
+		}
+	} else {
+		fail("could not find MACS executable (macs or macs14)")
+	}
+	
+	
 	# Parameter values (character vector)
 	params <- c(...) ## Nice :)
 	if (!is.null(params)) {
-
+		
+		# Remove parameters that are not supported by given version
+		if (!use.max.dup.tags) {
+			params <- params[names(params) != "force_max_dup_tags"]
+			params <- params[names(params) != "max_dup_tags"]
+		}
+		
+		if (!old.mfold) {
+			params <- params[names(params) != "mfold"]
+		}
+		
 		# Flags
 		flags <- paste("--", names(params), sep="")
-
+		
 		# Remove the parameter names
 		names(params) <- NULL
-    
+		
 		# Switches that are on (value is "TRUE" or "T")
 		switchOnParams <- NULL
 		switchOn <- which(params == "T" | params == "TRUE")
@@ -200,34 +231,44 @@ runMACS <- function(..., logFile="/dev/null") {
 			params <- params[-switchOn]
 			flags <- flags[-switchOn]
 		}
-
+		
 		# Switches that are off are ignored (value is "FALSE" or "F")        
 		switchOff <- which(params == "F" | params == "FALSE")
 		if (!identical(switchOff, integer(0))) {
 			params <- params[-switchOff]
 			flags <- flags[-switchOff]
 		}
-    
+		
 		# Command
-		command <- paste("macs", paste(flags, params, collapse=" "))
+		command <- paste(macs.command, paste(flags, params, collapse=" "))
 		if (!is.null(switchOnParams)) {
 			switchOnParams <-  paste(switchOnParams, collapse=" ")
 			command <- paste(command, switchOnParams)
 		}
-    
+		
 		# Run macs. Macs writes its output to stderr (stream number 2)
 		# &> redirects both stderr and stdout
 		# Iterates through mfold values to find low enough that works
-		for (mfold in list(32, 24, 16, 8)) {
-			system.output <- system(paste(environment.initialiser, command, paste("--mfold=", mfold, sep=""), "2>", logFile))
-			if (system.output == 0) {
-				break # was succesfull, don't lower mfold value any more
+		if (old.mfold) {
+			for (mfold in list(32, 24, 16, 8)) {
+				whole.command <- paste(environment.initialiser, command, paste("--mfold=", mfold, sep=""), "2>", logFile)
+				print(whole.command)
+				system.output <- system(whole.command)
+				if (system.output == 0) {
+					break # was succesfull, don't lower mfold value any more
+				}
 			}
+			
+		} else {
+			whole.command <- paste(environment.initialiser, command, "2>", logFile)
+			print(whole.command)
+			system.output <- system(whole.command)
 		}
 		
 		return(invisible(system.output))
 	}
 }
+
 
 # Parses shift size that was used to produce the result file
 parseMACSParameters <- function(file){
