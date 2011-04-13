@@ -1,5 +1,5 @@
 R_BIN=R
-FILE_NAME=peakROTS_1.0.0
+FILE_NAME=peakROTS_1.0.1
 
 all:
 	$(R_BIN) CMD build peakROTS
