@@ -15,7 +15,7 @@ supports parallel processing either in a single node or multiple nodes (batch pr
 \tabular{ll}{
 Package: \tab peakROTS\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
+Version: \tab 1.0.1\cr
 Date: \tab 2010-10-27\cr
 License: \tab GPL (>= 3)\cr
 }
