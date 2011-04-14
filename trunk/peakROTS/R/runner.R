@@ -106,7 +106,9 @@ run <- function(
 
 			Sys.sleep(polling.timeout.seconds) # sleep some seconds
 		}
-	}	
+	}
+	
+	print("All jobs are finished")
 }
 
 jobs.add <- function(file, job.name, script.name, unique.id, dependencies = list(), args = list()) {
