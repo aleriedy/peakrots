@@ -14,7 +14,8 @@
 		map.file = "data/Mapability_CE.txt",
 		preprocess.address = "/home/akallio/PeakSeq/Preprocessing/Preprocessing.so",
 		peakseq.address = "/home/akallio/PeakSeq/PeakSeq_v1.01/PeakSeq_v1.01.so",
-#		bootstrap.count = 10,
+		preprocess.chr = as.character(c(6)),
+		#		bootstrap.count = 10,
 		bootstrap.count = 1,
 		r.command = "R"
 	)
