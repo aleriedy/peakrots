@@ -161,11 +161,9 @@ repro.PeakSeq <- function(sample.number, outputName, outputName2) {
 
 		                        # Take the central 500bp regions based on peak center.
 		                        peaksA.c500<- peaksA
-								if (nrow(peaksA) > 0) {
-		                        	mm<- floor(apply(cbind(peaksA[,"Start"],peaksA[,"Stop"]),1,median))
-		                        	peaksA.c500[,"Start"]<- mm - (500-1)
-		                        	peaksA.c500[,"Stop"]<- mm + 500
-								}
+								mm<- floor(apply(cbind(peaksA[,"Start"],peaksA[,"Stop"]),1,median))
+								peaksA.c500[,"Start"]<- mm - (500-1)
+								peaksA.c500[,"Stop"]<- mm + 500
 		                        peaksA.c500<- peaksA.c500[,1:3]
 
 		                        # Take the central 500bp regions based on peak summit.
