@@ -1,0 +1,13 @@
+Package: peakROTS
+Type: Package
+Title: ROTS procedure for optimized ChIP-seq peak detection.
+Version: 1.0.1
+Date: 2010-10-27
+Author: Laura L. Elo, Aleksi Kallio, Teemu D. Laajala
+Maintainer: Aleksi Kallio <aleksi.kallio@csc.fi>
+Suggests: R (>= 2.5.1)
+Description: ROTS procedure for ChIP-seq peak detection allows user to optimize
+	parameters of common peak detection applications (MACS, PeakSeq).
+License: GPL (>= 3)
+URL: http://www.nic.funet.fi/pub/sci/molbio/peakROTS/
+
