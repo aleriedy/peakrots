@@ -30,15 +30,22 @@ parseMACSResults <- function(name, final=FALSE){
 ## p-values are equal. It seems the the results are ordered according the p-value.
 parsePeakSeqResults <- function(name, final=FALSE){
   if( !final ){
-    output <- read.table(file=name, header=TRUE, stringsAsFactors=FALSE)
-    ## Choose Chr, Start, End, Enrichment and q_value
-    output <- output[c("Chr", "Start", "Stop","Enrichment", "q_value")]
-    # Making a column for -10xlog10q-val
-    output_new <- matrix(nrow=nrow(output), ncol=ncol(output)+1)
-    output_new <- output
-    output_new[,6] <- -10*log10(output[,5])
-    colnames(output_new) = c("Chr", "Start", "Stop","Enrichment", "q_value", "-10log10q_value")
-    return(output_new)
+    output <- try(read.table(file=name, header=TRUE, stringsAsFactors=FALSE),silent=TRUE)
+    if(class(output)=="try-error"){
+    	    # Could not read any lines from input, returning dummy
+	    output_new <- matrix(nrow=0, ncol=6)
+	    colnames(output_new) = c("Chr", "Start", "Stop","Enrichment", "q_value", "-10log10q_value")
+	    return(output_new)
+    }else{
+	    ## Choose Chr, Start, End, Enrichment and q_value
+	    output <- output[c("Chr", "Start", "Stop","Enrichment", "q_value")]
+	    # Making a column for -10xlog10q-val
+	    output_new <- matrix(nrow=nrow(output), ncol=ncol(output)+1)
+	    output_new <- output
+	    output_new[,6] <- -10*log10(output[,5])
+	    colnames(output_new) = c("Chr", "Start", "Stop","Enrichment", "q_value", "-10log10q_value")
+	    return(output_new)
+    }
   }
 }
 
