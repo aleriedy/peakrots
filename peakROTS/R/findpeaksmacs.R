@@ -199,7 +199,7 @@ runMACS <- function(..., logFile="/dev/null") {
 			use.max.dup.tags <- TRUE
 		}
 	} else {
-		fail("could not find MACS executable (macs or macs14)")
+		stop("could not find MACS executable (macs or macs14)")
 	}
 	
 	
