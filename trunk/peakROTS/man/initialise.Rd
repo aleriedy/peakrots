@@ -23,7 +23,7 @@ dependencies. The settings file contains all information needed to run the workf
   \item{bw}{ List of bw's for peak detection (MACS) }
   \item{nolambda}{ List of values of nolambda parameter for peak detection (MACS) }
   \item{mfold}{ List of mfold values for peak detection (MACS) }
-  \item{gsize}{ List of gsize values for peak detection (MACS) }
+  \item{gsize}{ Effective genome size for peak detection. Defaults to human: 2.7e9. MACS suggests 1.87e9 for mouse, 9e7 for C. elegans and 1.2e8 for fruitfly (MACS) }
   \item{READLENGTH}{ List of readlengths for peak detection (PeakSeq) }
   \item{WSIZE}{ List of window sizes for peak detection (PeakSeq) }
   \item{WPERC}{ List of WPERC values for peak detection (PeakSeq) }
