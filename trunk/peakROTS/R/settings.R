@@ -17,6 +17,7 @@ initialise <- function(
 	environment.initialiser = "",
 	pvalue = 10^-3,
 	bootstrap.count = 100,
+	bootstrap.depth = 1.00,
 	r.command = "R",
 	
 	## MACS ROTS-parameters
