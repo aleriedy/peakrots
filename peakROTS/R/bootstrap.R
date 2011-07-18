@@ -88,22 +88,32 @@ bootstrap.generate.memory <- function(input.file, output.name, sample.number) {
                 writing = file(bsFile, open="w")
 
                 # Generating bootstrap sample labels
-                samples = sample(n, n, replace=T)
+		# Bootstrapping a dataset equal in size to the original dataset
+                if(bootstrap.depth==1){
+			samples = sample(n, n, replace=T)
+		# Bootstrapping a dataset with less tags than original dataset: decreased sequencing depth
+		}else if(bootstrap.depth<1){
+			samples = sample(n, round(bootstrap.depth*n,0), replace=F)
+		# Bootstrapping a dataset with more tags than original dataset: increased sequencing depth
+		}else{
+			samples = sample(n, round(bootstrap.depth*n,0), replace=T)
+		}
                 sortedsamples = sort(samples)
 
                 # Writing a line X times (X =0,1,2,3... determined by bootstrap)
                 print(paste("Writing file", bsFile, "..."))
                 readLine = readLines(con=reading,n=1)
                 counter=1
-                while(counter<n){
+		limit = round(bootstrap.depth*n,0)
+                while(counter<limit){
                         if(sortedsamples[counter]==line){
                                 writeLines(readLine, con=writing)
                                 counter = counter + 1
                         }else{
                         	line = line + 1
-                        	if(line%%1000000==0) {print(paste("Line",line, "processed ..."))}
                         	readLine = readLines(con=reading,n=1)
                         }
+                        if(line%%1000000==0) {print(paste("Line",line, "processed ..."))}
                 }
                 close(con=writing, type="w")
                 close(con=reading, type="r")
