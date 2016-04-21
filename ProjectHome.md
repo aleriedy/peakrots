@@ -1,0 +1,1 @@
+Bioinformatics analysis tool for optimized ChIP-seq peak detection. Written in R.
